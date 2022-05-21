@@ -2,9 +2,7 @@ package com.example.demo.member;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,16 +23,27 @@ public class MemberController {
 //        return memberService.getMember();
 //    }
 
-    @PostMapping(value = "/home")
-    public List<Member> login() {
+   @GetMapping("/signUp")
+   public String signUpForm(){
+        return "signUp";
+   }
 
-        return memberService.getMember();
+    @PostMapping("/signUp")
+    public String signUp(){
+        return "redirect:/";
+        //왜 여기선 꼭 html을 리턴해야하는거지.? 그냥 스트링 뿌리는건안되나
+        // @RequestBody도 안됨!
     }
 
-    @GetMapping("/register")
-    public String register() {
-        return "register";
+    @PostMapping("/home")
+    public String login(MemberLoginForm form){
+        Member member = new Member();
+        member.setId(form.getId());
+        member.setPassword(form.getPwd());
+        return "home";
     }
+
+
 
 //    @PostMapping(value = "/members/new")
 //    public String create(MemberForm form) {
