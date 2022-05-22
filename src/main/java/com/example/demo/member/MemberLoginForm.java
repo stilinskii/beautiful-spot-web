@@ -1,6 +1,5 @@
 package com.example.demo.member;
 
-//login으로 바꾸자
 public class MemberLoginForm {
     private String id;
     private String pwd;

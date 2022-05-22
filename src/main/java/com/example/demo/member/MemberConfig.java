@@ -20,8 +20,7 @@ CommandLineRunner commandLineRunner(MemberRepository repository){
                         "jenn",
                         "lhy98410@naver.com",
                         "dfdfd",
-                        LocalDate.of(1998, Month.APRIL,10) ,
-                        20
+                        LocalDate.of(1998, Month.APRIL,10)
                 )));
     };
 }

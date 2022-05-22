@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberService {
@@ -25,16 +26,22 @@ public class MemberService {
     }
 
     //cant test
-    public void saveMember(){
-        memberRepository.saveAll(List.of(
-                new Member(
-                        "lhy98410",
-                        "jenn",
-                        "lhy98410@naver.com",
-                        "dfdfd",
-                        LocalDate.of(1998, Month.APRIL,10) ,
-                        20
-                )));
+    public void saveMember(Member member){
+        //아이디 이메일 중복체크 로직 추가
+        memberRepository.save(member);
+    }
+
+    public int chkMember(Member member){
+        Optional<Member> byId = memberRepository.findById(member.getId());
+        if(byId.isPresent()){
+            if(byId.get().getPassword().equals(member.getPassword())){
+                return 1;//login success
+            }else{
+                return 2;//wrong password
+            }
+        }else{
+            return 3;//user not found
+        }
     }
 
 

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -27,20 +28,46 @@ public class MemberController {
    public String signUpForm(){
         return "signUp";
    }
+    //왜 여기선 꼭 html을 리턴해야하는거지.?
+    // @Responsebody 하면 signUp 글자를 띄움
 
     @PostMapping("/signUp")
-    public String signUp(){
+    public String signUp(MemberSignupForm form){
+        String[] dob = form.getDob().split("-");
+        int bYear = Integer.parseInt(dob[0]);
+        int bMonth = Integer.parseInt(dob[1]);
+        int bDay = Integer.parseInt(dob[2]);
+    Member member = new Member();
+        member.setId(form.getId());
+        member.setPassword(form.getPwd());
+        member.setNickname(form.getNickName());
+        member.setEmail(form.getEmail());
+        member.setDob(LocalDate.of(bYear,bMonth,bDay));
+    memberService.saveMember(member);
+        System.out.println("signup success");
         return "redirect:/";
-        //왜 여기선 꼭 html을 리턴해야하는거지.? 그냥 스트링 뿌리는건안되나
-        // @RequestBody도 안됨!
     }
 
-    @PostMapping("/home")
+    //   @RequestMapping(value = "/login")
+    //    @ResponseBody
+    @PostMapping("/login")
     public String login(MemberLoginForm form){
         Member member = new Member();
         member.setId(form.getId());
         member.setPassword(form.getPwd());
-        return "home";
+        int memberChk = memberService.chkMember(member);
+        //1.아이디비번 다 맞으면 홈으로
+        //2. 아이디는 맞는데 비번 틀리면 다시 로그인페이지로
+        //3. 아이디 틀리면 회원가입 페이지로.
+        //사실 alert띄우고싶은데 어떻게 해야할지 모르겠다.
+        if(memberChk==1){
+            return "home";
+        }else if(memberChk==2){
+            return "redirect:/";
+        }else {
+            //<script>alert('fail);
+            return "signUp";
+        }
     }
 
 

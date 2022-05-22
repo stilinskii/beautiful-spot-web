@@ -29,13 +29,12 @@ public class Member {
     @Transient
     private int age;
 
-    public Member(String id, String nickname, String email, String password, LocalDate dob, int age) {
+    public Member(String id, String nickname, String email, String password, LocalDate dob) {
         this.id = id;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.dob = dob;
-        this.age = age;
     }
 
     public int getAge() {
