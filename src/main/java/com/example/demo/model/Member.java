@@ -1,9 +1,10 @@
-package com.example.demo.member;
+package com.example.demo.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,16 +23,17 @@ public class Member {
 
     @Id
     private String id;
-    private String nickname;
+    private String username;
     private String email;
     private String password;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
     @Transient
     private int age;
 
-    public Member(String id, String nickname, String email, String password, LocalDate dob) {
+    public Member(String id, String username, String email, String password, LocalDate dob) {
         this.id = id;
-        this.nickname = nickname;
+        this.username = username;
         this.email = email;
         this.password = password;
         this.dob = dob;

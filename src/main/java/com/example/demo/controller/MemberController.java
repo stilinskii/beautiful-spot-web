@@ -1,22 +1,24 @@
-package com.example.demo.member;
+package com.example.demo.controller;
 
+import com.example.demo.model.MemberLoginForm;
+import com.example.demo.service.MemberService;
+import com.example.demo.model.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
-import java.util.List;
 
 
 @Controller
 public class MemberController {
 
+    @Autowired
     private final MemberService memberService;
 
-    @Autowired
     public MemberController(MemberService memberService) {
         this.memberService = memberService;
     }
+
+
 
     //로그인후 홈으로 이동
 //    @GetMapping(path="/home")
@@ -24,29 +26,29 @@ public class MemberController {
 //        return memberService.getMember();
 //    }
 
-   @GetMapping("/signUp")
-   public String signUpForm(){
-        return "signUp";
-   }
+//   @GetMapping("/signUp")
+//   public String signUpForm(){
+//        return "signUp";
+//   }
     //왜 여기선 꼭 html을 리턴해야하는거지.?
     // @Responsebody 하면 signUp 글자를 띄움
 
-    @PostMapping("/signUp")
-    public String signUp(MemberSignupForm form){
-        String[] dob = form.getDob().split("-");
-        int bYear = Integer.parseInt(dob[0]);
-        int bMonth = Integer.parseInt(dob[1]);
-        int bDay = Integer.parseInt(dob[2]);
-    Member member = new Member();
-        member.setId(form.getId());
-        member.setPassword(form.getPwd());
-        member.setNickname(form.getNickName());
-        member.setEmail(form.getEmail());
-        member.setDob(LocalDate.of(bYear,bMonth,bDay));
-    memberService.saveMember(member);
-        System.out.println("signup success");
-        return "redirect:/";
-    }
+//    @PostMapping("/signUp")
+//    public String signUp(MemberSignupForm form){
+//        String[] dob = form.getDob().split("-");
+//        int bYear = Integer.parseInt(dob[0]);
+//        int bMonth = Integer.parseInt(dob[1]);
+//        int bDay = Integer.parseInt(dob[2]);
+//    Member member = new Member();
+//        member.setId(form.getId());
+//        member.setPassword(form.getPwd());
+//        member.setNickname(form.getNickName());
+//        member.setEmail(form.getEmail());
+//        member.setDob(LocalDate.of(bYear,bMonth,bDay));
+//    memberService.saveMember(member);
+//        System.out.println("signup success");
+//        return "redirect:/";
+//    }
 
     //   @RequestMapping(value = "/login")
     //    @ResponseBody
@@ -63,7 +65,7 @@ public class MemberController {
         if(memberChk==1){
             return "home";
         }else if(memberChk==2){
-            return "redirect:/";
+            return "index";
         }else {
             //<script>alert('fail);
             return "signUp";

@@ -1,23 +1,24 @@
-package com.example.demo.member;
+package com.example.demo.service;
 
+import com.example.demo.model.Member;
+import com.example.demo.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MemberService {
 
+    @Autowired
     private final MemberRepository memberRepository;
 
 
-    @Autowired
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
+
 
 
 
