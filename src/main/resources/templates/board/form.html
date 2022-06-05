@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="fragments/common :: head"> </head>
+  <body>
+    <header
+      th:replace="fragments/common :: header"
+      class="p-3 bg-dark text-white"
+    ></header>
+    <div class="layout">
+      <form
+        action="/form"
+        method="post"
+        enctype="multipart/form-data"
+        th:object="${board}"
+      >
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" id="title" name="title" />
+        </div>
+        <div class="mb-3">
+          <label for="formFileMultiple" class="form-label"
+            >Multiple files input example</label
+          >
+          <input
+            class="form-control"
+            type="file"
+            name="image"
+            id="formFileMultiple"
+            accept="image/*"
+            multiple
+          />
+        </div>
+        <div class="mb-3">
+          <label for="content" class="form-label">content</label>
+          <textarea
+            class="form-control"
+            id="content"
+            rows="3"
+            name="content"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </body>
+</html>
