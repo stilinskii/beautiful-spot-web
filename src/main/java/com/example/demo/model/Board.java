@@ -14,7 +14,6 @@ public class Board {
     private Integer id;
     private String title;
     private String content;
-    private Blob image;
     private String filename;
     private String filepath;
     //작성자도 필요

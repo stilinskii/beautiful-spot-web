@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.Board;
 import com.example.demo.model.Member;
+import com.example.demo.repository.BoardRepository;
 import com.example.demo.repository.MemberRepository;
 import com.example.demo.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +12,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.util.List;
+
 @Controller
 public class HomeController {
 
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private BoardRepository boardRepository;
 
     @GetMapping
-    public String home(){
+    public String home(Model model){
+        List<Board> boards = boardRepository.findAll();
+        model.addAttribute("boards",boards);
+
         return "index";
     }
 
