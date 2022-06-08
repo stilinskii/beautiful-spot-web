@@ -30,7 +30,7 @@
             th:if="${#fields.hasErrors('title')}"
             th:errors="*{title}"
           >
-            enter more than one and less than 30 characters 
+            error
           </div>
         <div class="mb-3">
           <label for="formFileMultiple" class="form-label"
@@ -62,7 +62,7 @@
             th:if="${#fields.hasErrors('content')}"
             th:errors="*{content}"
           >
-            enter Something 
+          error
           </div>
         </div>
         <a th:href="@{/}" type="button" class="btn btn-dark">cancle</a>

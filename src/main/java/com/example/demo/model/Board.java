@@ -14,10 +14,9 @@ public class Board {
     @GeneratedValue(strategy = GenerationType. SEQUENCE, generator = "Article_SEQ_GENERATOR")
     private Integer id;
     @NotNull
-    @Size(min=1, max=30)
+    @Size(min=1, max=30, message = "title can't be empty(less than 30 characters)")
     private String title;
-    @NotNull
-    @Size(min=1)
+
     private String content;
 
     private String filename;

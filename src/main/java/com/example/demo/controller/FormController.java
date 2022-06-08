@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Board;
 import com.example.demo.repository.BoardRepository;
+import com.example.demo.validator.BoardValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +27,8 @@ public class FormController {
 
     @Autowired
     private BoardRepository boardRepository;
-
+    @Autowired
+    private BoardValidator boardValidator;
     @GetMapping
     public String form(Model model){
         List<Board> boards = boardRepository.findAll();
@@ -37,7 +39,8 @@ public class FormController {
 
     @PostMapping("/form")
     public String formSubmit(@Valid Board board,BindingResult bindingResult, @RequestParam(value = "image",required=false) MultipartFile image) throws IOException{
-       if(bindingResult.hasErrors()){
+       boardValidator.validate(board, bindingResult);
+        if(bindingResult.hasErrors()){
            log.info("bindingResult={}",bindingResult.getObjectName());
            return "board/form";
        }
