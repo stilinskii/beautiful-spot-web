@@ -3,7 +3,7 @@
   <head th:replace="fragments/common :: head"> </head>
   <body>
     <header
-      th:replace="fragments/common :: header"
+      th:replace="fragments/common :: header(home)"
       class="p-3 bg-dark text-white"
     ></header>
 
@@ -18,7 +18,7 @@
               short so folks don’t simply skip over it entirely.
             </p>
             <p>
-              <a href="#" th:href="@{/form}" class="btn btn-primary my-2">upload image</a>
+              <a href="#" th:href="@{/board/form}" class="btn btn-primary my-2">upload image</a>
               <a href="#" class="btn btn-secondary my-2">Secondary action</a>
             </p>
           </div>
@@ -33,8 +33,8 @@
               <div class="card shadow-sm">
                 <svg
                   class="bd-placeholder-img card-img-top"
-                  width="100%"
-                  height="225"
+                  
+                  height="0"
                   xmlns="http://www.w3.org/2000/svg"
                   role="img"
                   aria-label="Placeholder: Thumbnail"
@@ -42,11 +42,7 @@
                   focusable="false"
                 >
                   <title>Placeholder</title>
-                  <!-- <rect width="100%" height="100%" fill="#55595c" /> -->
-                  <!-- <text x="50%" y="50%" fill="#eceeef" dy=".3em">
-                    Thumbnail
-                  </text> -->
-                  <image href="#" th:href="@{${board.filepath}}" width="100%" height="225" alt="">
+                  <img src="#" th:src="@{${board.filepath}}"  height="225" alt="">
                 </svg>
 
                 <div class="card-body">
@@ -92,7 +88,7 @@
       </div>
     </main>
 
-    <footer class="text-muted py-5">
+    <footer th:replace="fragments/common :: footer" class="text-muted py-5">
       <div class="container">
         <p class="float-end mb-1">
           <a href="#">Back to top</a>

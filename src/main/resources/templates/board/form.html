@@ -3,32 +3,41 @@
   <head th:replace="fragments/common :: head"> </head>
   <body>
     <header
-      th:replace="fragments/common :: header"
+      th:replace="fragments/common :: header(home)"
       class="p-3 bg-dark text-white"
     ></header>
     <div class="layout">
       <form
-        action="/form"
         method="post"
         enctype="multipart/form-data"
         th:object="${board}"
+        th:action="@{/board/form}"
+        action="/board/form"
       >
+      <input type="hidden" th:field="*{id}" />
         <div class="mb-3">
           <label for="title" class="form-label">Title</label>
           <input
             th:field="*{title}"
             type="text"
             class="form-control"
+            th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'"
             id="title"
             name="title"
           />
-        </div>
+          <div
+            class="invalid-feedback"
+            th:if="${#fields.hasErrors('title')}"
+            th:errors="*{title}"
+          >
+            enter more than one and less than 30 characters 
+          </div>
         <div class="mb-3">
           <label for="formFileMultiple" class="form-label"
             >Multiple files input example</label
           >
+          <!-- th:field="*{filepath}" -->
           <input
-            th:field="*{filepath}"
             class="form-control"
             type="file"
             name="image"
@@ -36,19 +45,30 @@
             accept="image/*"
             multiple
           />
+          
         </div>
         <div class="mb-3">
           <label for="content" class="form-label">content</label>
           <textarea
             th:field="*{content}"
             class="form-control"
+            th:classappend="${#fields.hasErrors('content')} ? 'is-invalid'"
             id="content"
             rows="3"
             name="content"
           ></textarea>
+          <div
+            class="invalid-feedback"
+            th:if="${#fields.hasErrors('content')}"
+            th:errors="*{content}"
+          >
+            enter Something 
+          </div>
         </div>
+        <a th:href="@{/}" type="button" class="btn btn-dark">cancle</a>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     </div>
+    <footer th:replace="fragments/common :: footer"></footer>
   </body>
 </html>
