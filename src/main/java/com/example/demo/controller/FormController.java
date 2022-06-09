@@ -5,19 +5,23 @@ import com.example.demo.repository.BoardRepository;
 import com.example.demo.validator.BoardValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Blob;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 @Slf4j
@@ -30,10 +34,9 @@ public class FormController {
     @Autowired
     private BoardValidator boardValidator;
     @GetMapping
-    public String form(Model model){
-        List<Board> boards = boardRepository.findAll();
+    public String form(Model model,Pageable pageable){
+        Page<Board> boards = boardRepository.findAll(pageable);
         model.addAttribute("boards",boards);
-
         return "board/board";
     }
 
