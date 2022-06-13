@@ -118,16 +118,43 @@
     <div th:replace="fragments/common :: articles"></div>
     <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">
-        <li class="page-item disabled">
-          <a class="page-link" href="#" tabindex="-1" aria-disabled="true"
+        <li
+          class="page-item"
+          th:classappend="${boards.pageable.pageNumber == 0} ? 'disabled'"
+        >
+          <a
+            class="page-link"
+            href="#"
+            th:href="@{/board(page=${boards.pageable.pageNumber-1})}"
+            tabindex="-1"
+            aria-disabled="true"
             >Previous</a
           >
         </li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#">Next</a>
+        <li
+          th:each="i : ${#numbers.sequence(startPage,endPage)}"
+          class="page-item"
+          th:classappend="${i == boards.pageable.pageNumber + 1} ? 'disabled'"
+        >
+          <a
+            class="page-link"
+            href="#"
+            th:href="@{/board(page=${i-1})}"
+            th:text="${i}"
+            >1</a
+          >
+        </li>
+
+        <li
+          class="page-item"
+          th:classappend="${boards.pageable.pageNumber+1 == boards.totalPages} ? 'disabled'"
+        >
+          <a
+            class="page-link"
+            href="#"
+            th:href="@{/board(page=${boards.pageable.pageNumber+1})}"
+            >Next</a
+          >
         </li>
       </ul>
     </nav>

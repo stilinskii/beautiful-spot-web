@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,10 +35,32 @@ public class FormController {
     @Autowired
     private BoardValidator boardValidator;
     @GetMapping
-    public String form(Model model,Pageable pageable){
+    public String form(Model model,@PageableDefault(size = 1) Pageable pageable){
         Page<Board> boards = boardRepository.findAll(pageable);
+        int[] pageNum = pageNum(boards);
+//        int startPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages()-4:Math.max(1,boards.getPageable().getPageNumber()-1);
+//        int endPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages():Math.min(startPage+4,boards.getTotalPages());
+        model.addAttribute("startPage",pageNum[0]);
+        model.addAttribute("endPage",pageNum[1]);
         model.addAttribute("boards",boards);
         return "board/board";
+    }
+    private int[] pageNum(Page<Board> boards) {
+        int startPage,endPage;
+        if(boards.getTotalPages()<=5){
+            startPage= 1;
+            endPage= boards.getTotalPages();
+        }else if(boards.getPageable().getPageNumber()>= boards.getTotalPages()-3 ){
+            startPage= boards.getTotalPages()-4;
+            endPage= boards.getTotalPages();
+        }else{
+            startPage= Math.max(1, boards.getPageable().getPageNumber()-1);
+            endPage= Math.min(startPage+4, boards.getTotalPages());
+        }
+
+//        int startPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages()-4:Math.max(1,boards.getPageable().getPageNumber()-1);
+//        int endPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages():Math.min(startPage+4,boards.getTotalPages());
+        return  new int[]  {startPage, endPage};
     }
 
     @PostMapping("/form")

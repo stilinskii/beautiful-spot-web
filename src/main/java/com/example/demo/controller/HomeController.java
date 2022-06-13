@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -26,7 +28,7 @@ public class HomeController {
     public String home(Model model){
         List<Board> boards = boardRepository.findAll();
         model.addAttribute("boards",boards);
-
+        model.addAttribute("localdate", LocalDateTime.now());
         return "index";
     }
 
