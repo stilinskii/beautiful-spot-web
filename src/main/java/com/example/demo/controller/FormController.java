@@ -6,8 +6,8 @@ import com.example.demo.validator.BoardValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.UUID;
 @Slf4j
 @Controller
@@ -35,11 +35,11 @@ public class FormController {
     @Autowired
     private BoardValidator boardValidator;
     @GetMapping
-    public String form(Model model,@PageableDefault(size = 1) Pageable pageable){
-        Page<Board> boards = boardRepository.findAll(pageable);
+    public String form(Model model,@PageableDefault(size = 3, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+                       @RequestParam(required = false, defaultValue = "") String searchText){
+//        Page<Board> boards = boardRepository.findAll(pageable);
+        Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(searchText, searchText, pageable);
         int[] pageNum = pageNum(boards);
-//        int startPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages()-4:Math.max(1,boards.getPageable().getPageNumber()-1);
-//        int endPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages():Math.min(startPage+4,boards.getTotalPages());
         model.addAttribute("startPage",pageNum[0]);
         model.addAttribute("endPage",pageNum[1]);
         model.addAttribute("boards",boards);
@@ -47,30 +47,28 @@ public class FormController {
     }
     private int[] pageNum(Page<Board> boards) {
         int startPage,endPage;
-        if(boards.getTotalPages()<=5){
+        int nowPage=boards.getPageable().getPageNumber();
+        int totalPage=boards.getTotalPages();
+        if(totalPage<=5){
             startPage= 1;
-            endPage= boards.getTotalPages();
-        }else if(boards.getPageable().getPageNumber()>= boards.getTotalPages()-3 ){
-            startPage= boards.getTotalPages()-4;
-            endPage= boards.getTotalPages();
-        }else{
-            startPage= Math.max(1, boards.getPageable().getPageNumber()-1);
-            endPage= Math.min(startPage+4, boards.getTotalPages());
+            endPage= totalPage;
+        }else if(nowPage>= totalPage-3 ){
+            startPage= totalPage-4;
+            endPage= totalPage;
+        }else {
+            startPage = Math.max(1, nowPage - 1);
+            endPage = Math.min(startPage + 4, totalPage);
         }
-
-//        int startPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages()-4:Math.max(1,boards.getPageable().getPageNumber()-1);
-//        int endPage = boards.getPageable().getPageNumber()>=boards.getTotalPages()-3 ? boards.getTotalPages():Math.min(startPage+4,boards.getTotalPages());
         return  new int[]  {startPage, endPage};
     }
 
     @PostMapping("/form")
-    public String formSubmit(@Valid Board board,BindingResult bindingResult, @RequestParam(value = "image",required=false) MultipartFile image) throws IOException{
+    public String formSubmit(@Valid Board board, BindingResult bindingResult, @RequestParam(value = "image",required=false) MultipartFile image, RedirectAttributes redirectAttributes) throws IOException{
        boardValidator.validate(board, bindingResult);
         if(bindingResult.hasErrors()){
            log.info("bindingResult={}",bindingResult.getObjectName());
            return "board/form";
        }
-
 
         String imageFileName = UUID.randomUUID()+"_"+image.getOriginalFilename();
        String path = System.getProperty("user.dir")+"/src/main/resources/static/images/";
@@ -82,8 +80,9 @@ public class FormController {
 
         boardRepository.save(board);
 
+        redirectAttributes.addAttribute("id",board.getId());
 
-        return "redirect:/";
+        return "redirect:/board/article";
 
     }
 

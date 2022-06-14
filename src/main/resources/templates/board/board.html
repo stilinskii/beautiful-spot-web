@@ -114,7 +114,28 @@
         </div>
       </div>
     </header>
-    <div>total: [[${boards.totalElements}]]</div>
+    <div>
+      <div>total: [[${boards.totalElements}]]</div>
+      <form
+        class="row g-3 d-flex justify-content-end"
+        method="get"
+        action="#"
+        th:action="@{/board}"
+      >
+        <div class="col-auto">
+          <label for="searchText" class="visually-hidden">Search</label>
+          <input
+            type="text"
+            class="form-control"
+            id="searchText"
+            name="searchText"
+          />
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-light mb-3">Search</button>
+        </div>
+      </form>
+    </div>
     <div th:replace="fragments/common :: articles"></div>
     <nav aria-label="Page navigation example">
       <ul class="pagination justify-content-center">
