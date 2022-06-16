@@ -46,42 +46,50 @@
 
     <!-- Custom styles for this template -->
     <link
-      href="../static/signin.css"
-      th:href="@{/signin.css}"
+      href="../static/css/signin.css"
+      th:href="@{/css/signin.css}"
       rel="stylesheet"
     />
   </head>
   <body class="text-center">
     <main class="form-signin">
-      <form>
-        <img
+      <a th:href="@{/}"
+        ><img
           class="mb-4"
-          src="../static/me.png"
-          th:src="@{/me.png}"
+          src="../static/loginLogo/me.png"
+          th:src="@{/loginLogo/me.png}"
           alt=""
           width="250"
           height="250"
-        />
+      /></a>
+      <form th:action="@{/account/login}" method="post">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-
+        <div th:if="${param.error}" class="alert alert-danger" role="alert">
+          Invalid username and password.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-info" role="alert">
+          You have been logged out.
+        </div>
         <div class="form-floating">
           <input
             type="text"
             class="form-control"
-            id="floatingInput"
-            placeholder="Id"
+            id="username"
+            placeholder="Username"
+            name="username"
           />
-          <label for="floatingInput">Id</label>
+          <label for="username">Username</label>
         </div>
 
         <div class="form-floating">
           <input
             type="password"
             class="form-control"
-            id="floatingPassword"
+            id="password"
             placeholder="Password"
+            name="password"
           />
-          <label for="floatingPassword">Password</label>
+          <label for="password">Password</label>
         </div>
 
         <div class="checkbox mb-3">
@@ -89,18 +97,13 @@
             <input type="checkbox" value="remember-me" /> Remember me
           </label>
         </div>
-        <a
-          href="#"
-          th:href="@{./index.html}"
-          class="w-100 btn btn-lg btn-primary"
-          type="submit"
-        >
+        <button class="w-100 btn btn-lg btn-primary" type="submit">
           Sign in
-        </a>
+        </button>
 
         <span
           >Click here to
-          <a href="#" th:href="@{signUp}">create an account</a></span
+          <a href="#" th:href="@{/account/signUp}">create an account</a></span
         >
         <p class="mt-5 mb-3 text-muted">&copy; 2017–2021</p>
       </form>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
   <head th:fragment="head">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -93,16 +93,27 @@
 
 
           <div class="text-end">
-            <a href="#" th:href="@{./login}" class="btn btn-outline-light me-2">
+            <a href="#" th:href="@{/account/login}" sec:authorize="!isAuthenticated()" class="btn btn-outline-light me-2">
               Login
             </a>
             <a
-              href="#"
-              th:href="@{./signUp}"
-              class="btn btn-outline-light me-2"
+            href="#"
+            th:href="@{/account/signUp}"
+            sec:authorize="!isAuthenticated()"
+            class="btn btn-outline-light me-2"
             >
-              Sign-up
-            </a>
+            Sign-up
+          </a>
+          <form
+          th:action="@{/logout}"
+          sec:authorize="isAuthenticated()"
+          method="post"
+          >
+          <span sec:authorize="isAuthenticated()" sec:authentication="name">username</span>
+          <span sec:authorize="isAuthenticated()" sec:authentication="principal.authorities">authority</span>
+          <button class="btn btn-outline-light me-2" type="submit">logout</button>    
+          
+            </form>
           </div>
         </div>
       </div>

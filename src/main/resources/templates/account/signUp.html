@@ -105,7 +105,12 @@
     }
   </style>
   <body>
-    <form action="/signUp" style="border: 1px solid #ccc" method="post">
+    <form
+      action="/account/signUp"
+      th:action="@{/account/signUp}"
+      style="border: 1px solid #ccc"
+      method="post"
+    >
       <div class="container">
         <h1>Sign Up</h1>
         <p>Please fill in this form to create an account.</p>
@@ -113,8 +118,8 @@
         <label for="username"><b>Username</b></label>
         <input type="text" placeholder="Enter name" name="username" required />
 
-        <label for="id"><b>Id</b></label>
-        <input type="text" placeholder="Enter Id" name="id" required />
+        <!-- <label for="id"><b>Id</b></label>
+        <input type="text" placeholder="Enter Id" name="id" required /> -->
         <label for="password"><b>Password</b></label>
         <input
           type="password"
@@ -123,7 +128,7 @@
           required
         />
         <label for="email"><b>Email</b></label>
-        <input type="text" placeholder="Enter Email" name="email" required />
+        <input type="text" placeholder="Enter Email" name="email" />
 
         <label for="dob"><b>Date of Birth</b></label>
         <div><input type="date" name="dob" /></div>
@@ -135,9 +140,7 @@
         </p>
 
         <div class="clearfix">
-          <a href="#" th:href="@{./index.html}" class="btn btn-danger col-3"
-            >Cancel</a
-          >
+          <a href="#" th:href="@{/}" class="btn btn-danger col-3">Cancel</a>
           <button type="submit" class="btn btn-primary col-3">Sign up</button>
         </div>
       </div>

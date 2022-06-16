@@ -5,33 +5,48 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
+@SequenceGenerator(name="MEMBER_SEQ_GENERATOR", sequenceName="MEMBER_NUM_SEQ", initialValue=1, allocationSize=1)
 public class Member {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType. SEQUENCE, generator = "MEMBER_SEQ_GENERATOR")
+    private int id;
     private String username;
+    @Nullable
     private String email;
     private String password;
+    private int enabled;
+    @Nullable
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
+
+    @ManyToMany
+    @JoinTable(
+            name = "member_role",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    List<Role> roles = new ArrayList<>();
+
+
+
     @Transient
     private int age;
 
-    public Member(String id, String username, String email, String password, LocalDate dob) {
+    public Member(int id, String username, String email, String password, LocalDate dob) {
         this.id = id;
         this.username = username;
         this.email = email;

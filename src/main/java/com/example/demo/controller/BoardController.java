@@ -12,14 +12,13 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,7 +27,7 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/board")
-public class FormController {
+public class BoardController {
 
     @Autowired
     private BoardRepository boardRepository;
@@ -63,28 +62,50 @@ public class FormController {
     }
 
     @PostMapping("/form")
-    public String formSubmit(@Valid Board board, BindingResult bindingResult, @RequestParam(value = "image",required=false) MultipartFile image, RedirectAttributes redirectAttributes) throws IOException{
+    public String formSubmit(@Valid Board board, BindingResult bindingResult, @RequestPart(value = "image",required=false) MultipartFile image, RedirectAttributes redirectAttributes) throws IOException{
        boardValidator.validate(board, bindingResult);
         if(bindingResult.hasErrors()){
-           log.info("bindingResult={}",bindingResult.getObjectName());
            return "board/form";
        }
+        log.info(board.getTitle());
+        log.info("img={}",image.getOriginalFilename());
 
-        String imageFileName = UUID.randomUUID()+"_"+image.getOriginalFilename();
-       String path = System.getProperty("user.dir")+"/src/main/resources/static/images/";
-        Path imagePath = Paths.get(path + imageFileName);
-        Files.write(imagePath, image.getBytes());
-
-        board.setFilename(imageFileName);
-        board.setFilepath("/images/"+imageFileName);
-
-        boardRepository.save(board);
+        boardRepository.save(setImageToBoard(board, image));
 
         redirectAttributes.addAttribute("id",board.getId());
 
         return "redirect:/board/article";
 
     }
+
+    private Board setImageToBoard(Board board, MultipartFile image) throws IOException {
+        String imageFileName = UUID.randomUUID()+"_"+ image.getOriginalFilename();
+        String path = System.getProperty("user.dir")+"/src/main/resources/static/images/";
+        Path imagePath = Paths.get(path + imageFileName);
+        Files.write(imagePath, image.getBytes());
+
+        board.setFilename(imageFileName);
+        board.setFilepath("/images/"+imageFileName);
+
+        return board;
+    }
+//    private Board setImageToBoard(Board board, MultipartFile image, HttpSession session) throws IOException {
+//        String imageFileName = UUID.randomUUID()+"_"+ image.getOriginalFilename();
+//        String saveDirectory = session.getServletContext().getRealPath("/");
+//        String savePath= saveDirectory +"images" + File.separator;
+//        File imageDir= new File(saveDirectory);
+//        if(!imageDir.exists()) {
+//            imageDir.mkdir();
+//        }
+////       String path = System.getProperty("user.dir")+"/src/main/resources/static/images/";
+//        Path imagePath = Paths.get(savePath + imageFileName);
+//        Files.write(imagePath, image.getBytes());
+//
+//        board.setFilename(imageFileName);
+//        board.setFilepath("/images/"+imageFileName);
+//
+//        return board;
+//    }
 
     @GetMapping("/form")
     public String form(Model model, @RequestParam(required = false) Integer id){
