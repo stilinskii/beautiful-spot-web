@@ -109,7 +109,7 @@
 
     <div th:object="${board}">
       <h1 th:text="*{title}">title</h1>
-      <image src="#" th:src="@{${board.filepath}}"></image>
+      <img src="#" th:src="|/board/images/${board.filename}|"></img>
       <h3 th:text="*{content}">content</h3>
     </div>
     <a href="#" th:href="@{/board/form(id=${board.id})}" class="btn btn-dark"

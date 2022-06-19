@@ -3,12 +3,16 @@ package com.example.demo.controller;
 import com.example.demo.model.Board;
 import com.example.demo.repository.BoardRepository;
 import com.example.demo.validator.BoardValidator;
+import com.example.demo.file.FileStore;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,10 +20,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,12 +32,13 @@ import java.util.UUID;
 @Slf4j
 @Controller
 @RequestMapping("/board")
+@RequiredArgsConstructor
 public class BoardController {
 
-    @Autowired
-    private BoardRepository boardRepository;
-    @Autowired
-    private BoardValidator boardValidator;
+
+    private final BoardRepository boardRepository;
+    private final BoardValidator boardValidator;
+    private final FileStore fileStore;
     @GetMapping
     public String form(Model model,@PageableDefault(size = 3, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
                        @RequestParam(required = false, defaultValue = "") String searchText){
@@ -68,9 +74,8 @@ public class BoardController {
            return "board/form";
        }
         log.info(board.getTitle());
-        log.info("img={}",image.getOriginalFilename());
-
-        boardRepository.save(setImageToBoard(board, image));
+        board.setFilename(fileStore.saveImage(image));
+        boardRepository.save(board);
 
         redirectAttributes.addAttribute("id",board.getId());
 
@@ -85,27 +90,11 @@ public class BoardController {
         Files.write(imagePath, image.getBytes());
 
         board.setFilename(imageFileName);
-        board.setFilepath("/images/"+imageFileName);
-
+        board.setFilepath(imageFileName);
+//        "/images/"
         return board;
     }
-//    private Board setImageToBoard(Board board, MultipartFile image, HttpSession session) throws IOException {
-//        String imageFileName = UUID.randomUUID()+"_"+ image.getOriginalFilename();
-//        String saveDirectory = session.getServletContext().getRealPath("/");
-//        String savePath= saveDirectory +"images" + File.separator;
-//        File imageDir= new File(saveDirectory);
-//        if(!imageDir.exists()) {
-//            imageDir.mkdir();
-//        }
-////       String path = System.getProperty("user.dir")+"/src/main/resources/static/images/";
-//        Path imagePath = Paths.get(savePath + imageFileName);
-//        Files.write(imagePath, image.getBytes());
-//
-//        board.setFilename(imageFileName);
-//        board.setFilepath("/images/"+imageFileName);
-//
-//        return board;
-//    }
+
 
     @GetMapping("/form")
     public String form(Model model, @RequestParam(required = false) Integer id){
@@ -127,6 +116,14 @@ public class BoardController {
             model.addAttribute("board",board);
         }
         return "board/article";
+    }
+
+    @ResponseBody
+    @GetMapping("/images/{fileName}")
+    public Resource downloadImage(@PathVariable String fileName, HttpServletResponse response) throws MalformedURLException {
+        log.info("loaded?={}","yes");
+
+        return new UrlResource("file:"+fileStore.getFullPath(fileName));
     }
 
 
