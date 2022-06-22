@@ -23,4 +23,8 @@ public class Board {
 
     private String filepath;
     //작성자도 필요
+
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 }

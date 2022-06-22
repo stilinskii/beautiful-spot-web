@@ -31,4 +31,9 @@ public class AccountController {
         memberService.save(member);
         return "redirect:/account/login";
     }
+
+    @GetMapping("/myPage")
+    public String myPage(){
+        return "account/myPage";
+    }
 }

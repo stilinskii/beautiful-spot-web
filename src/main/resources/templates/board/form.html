@@ -13,6 +13,8 @@
         th:object="${board}"
         th:action="@{/board/form}"
       >
+      <main class="container">
+        <div class="bg-light p-5 rounded">
       <!-- <input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }" /> -->
       <input type="hidden" th:field="*{id}" />
         <div class="mb-3">
@@ -69,6 +71,8 @@
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     </div>
+  </div>
+</main>
     <footer th:replace="fragments/common :: footer"></footer>
   </body>
 </html>

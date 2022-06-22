@@ -1,9 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.file.FileStore;
 import com.example.demo.model.Board;
 import com.example.demo.repository.BoardRepository;
+import com.example.demo.service.BoardService;
 import com.example.demo.validator.BoardValidator;
-import com.example.demo.file.FileStore;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -12,7 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.awt.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -37,12 +38,14 @@ public class BoardController {
 
 
     private final BoardRepository boardRepository;
+
+    private final BoardService boardService;
     private final BoardValidator boardValidator;
     private final FileStore fileStore;
     @GetMapping
     public String form(Model model,@PageableDefault(size = 3, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
                        @RequestParam(required = false, defaultValue = "") String searchText){
-//        Page<Board> boards = boardRepository.findAll(pageable);
+//        Page<Board> boards = boardRepository.findAll(pageable)
         Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(searchText, searchText, pageable);
         int[] pageNum = pageNum(boards);
         model.addAttribute("startPage",pageNum[0]);
@@ -68,14 +71,15 @@ public class BoardController {
     }
 
     @PostMapping("/form")
-    public String formSubmit(@Valid Board board, BindingResult bindingResult, @RequestPart(value = "image",required=false) MultipartFile image, RedirectAttributes redirectAttributes) throws IOException{
+    public String formSubmit(@Valid Board board, BindingResult bindingResult, @RequestPart(value = "image",required=false) MultipartFile image, RedirectAttributes redirectAttributes, Authentication authentication) throws IOException{
        boardValidator.validate(board, bindingResult);
         if(bindingResult.hasErrors()){
            return "board/form";
        }
         log.info(board.getTitle());
         board.setFilename(fileStore.saveImage(image));
-        boardRepository.save(board);
+
+        boardService.save(board,authentication.getName());
 
         redirectAttributes.addAttribute("id",board.getId());
 
@@ -101,7 +105,7 @@ public class BoardController {
         if(id == null){
             model.addAttribute("board",new Board());
         }else{
-            Board board = boardRepository.findById(id).orElse(null);
+            Board board = boardService.findById(id);
             model.addAttribute("board",board);
         }
         return "board/form";
@@ -112,7 +116,7 @@ public class BoardController {
         if(id == null){
             model.addAttribute("board",new Board());
         }else{
-            Board board = boardRepository.findById(id).orElse(null);
+            Board board = boardService.findById(id);
             model.addAttribute("board",board);
         }
         return "board/article";
@@ -121,9 +125,16 @@ public class BoardController {
     @ResponseBody
     @GetMapping("/images/{fileName}")
     public Resource downloadImage(@PathVariable String fileName, HttpServletResponse response) throws MalformedURLException {
-        log.info("loaded?={}","yes");
 
         return new UrlResource("file:"+fileStore.getFullPath(fileName));
+    }
+
+    @Secured("ROLE_ADMIN")
+    @ResponseBody
+    @DeleteMapping("/delete/{id}")
+    public void deleteArticle(@PathVariable Integer id){
+        boardService.deleteArticle(id);
+//        return "redirect:/board";
     }
 
 
