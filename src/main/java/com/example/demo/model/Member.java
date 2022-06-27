@@ -7,10 +7,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table
@@ -27,6 +29,7 @@ public class Member {
     @Nullable
     private String email;
     private String password;
+    @Nullable
     private int enabled;
     @Nullable
     @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -55,7 +58,10 @@ public class Member {
         this.dob = dob;
     }
 
-    public int getAge() {
+    public Object getAge() {
+        if(dob==null){
+            return null;
+        }
         return Period.between(this.dob,LocalDate.now()).getYears();
     }
 

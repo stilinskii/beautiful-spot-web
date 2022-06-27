@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,24 @@ public class MemberService {
         role.setId(1);
         member.getRoles().add(role);
         return memberRepository.save(member);
+    }
+
+    public Member findByUsername(String username){
+        Member member = memberRepository.findMemberByUsername(username);
+
+        return memberRepository.findMemberByUsername(username);
+    }
+
+    public void editMemberInfo(Member member){
+        Member originalMember = memberRepository.findById(member.getId()).get();
+
+        if(!StringUtils.isEmpty(member.getPassword())){
+            String encodedPassword = passwordEncoder.encode(member.getPassword());
+            member.setPassword(encodedPassword);
+        }else {
+            member.setPassword(originalMember.getPassword());
+        }
+        memberRepository.save(member);
     }
 
 

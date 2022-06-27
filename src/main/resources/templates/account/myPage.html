@@ -78,14 +78,30 @@
         <h2>My Page</h2>
       </div>
       <div id="wrap" class="bg-light p-5 rounded">
-        <form class="row g-3" method="post">
+        <form class="row g-3" method="post" th:action="@{|/account/myPage/edit/${member.username}|}">
+          <input type="hidden" th:value="${member.id}" name="id">
+          <input type="hidden" th:value="${member.enabled}" name="enabled">
           <div class="col-md-6">
             <label for="inputEmail4" class="form-label">Username</label>
-            <input type="text" class="form-control" disabled value="username" />
+            <input
+              type="text"
+              id="inputEmail4"
+              class="form-control"
+              disabled
+              name="username"
+              value="username"
+              th:value="${member.username}"
+            />
           </div>
           <div class="col-md-6">
             <label for="inputPassword4" class="form-label">Password</label>
-            <input type="text" class="form-control" id="inputPassword4" />
+            <input
+              type="text"
+              class="form-control"
+              id="inputPassword4"
+              name="password"
+
+            />
           </div>
           <div class="col-12">
             <label for="inputAddress" class="form-label">Email</label>
@@ -94,6 +110,8 @@
               class="form-control"
               id="inputAddress"
               placeholder="abc@gmail.com"
+              name="email"
+              th:value="${member.email}"
             />
           </div>
           <div class="col-9">
@@ -102,7 +120,8 @@
               type="date"
               class="form-control"
               id="inputAddress2"
-              placeholder="Apartment, studio, or floor"
+              name="dob"
+              th:value="${member.dob}"
             />
           </div>
 
@@ -113,18 +132,22 @@
               class="form-control"
               id="inputZip"
               disabled
-              value="20"
+              value=" "
+              th:value="${member.age}?:_"
             />
           </div>
 
           <div class="col-12">
             <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
+        </form>
+        <form method="post" th:action="|/account/delete/${member.username}|">
           <div class="col-12">
             <button type="submit" class="btn btn-danger">delete account</button>
           </div>
         </form>
       </div>
     </main>
+
   </body>
 </html>

@@ -89,7 +89,8 @@
               >Board</a
               >
             </li>
-            <li><a href="#" th:href="@{/account/myPage}" class="nav-link px-2 text-white"
+
+            <li><a href="#" th:href="@{|/account/myPage/${#authentication.name}|}" class="nav-link px-2 text-white"
               th:classappend="${menu} == 'mypage'? 'text-secondary':'text-white'"
               sec:authorize="isAuthenticated()"
               >My Page</a></li>

@@ -1,21 +1,20 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Member;
-import com.example.demo.repository.MemberRepository;
 import com.example.demo.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/account")
 public class AccountController {
     @Autowired
     private MemberService memberService;
+
+
     @GetMapping("/login")
     public String loginForm(){
         return "account/login";
@@ -32,8 +31,21 @@ public class AccountController {
         return "redirect:/account/login";
     }
 
-    @GetMapping("/myPage")
-    public String myPage(){
+    @GetMapping("/myPage/{username}")
+    public String myPage(@PathVariable String username, Model model){
+        model.addAttribute("member",memberService.findByUsername(username));
         return "account/myPage";
     }
+
+
+    @PostMapping("/myPage/edit/{username}")
+    public String editInfo(@PathVariable String username, @ModelAttribute Member member, RedirectAttributes redirectAttributes){
+
+        memberService.editMemberInfo(member);
+        redirectAttributes.addAttribute("username",username);
+        return "redirect:/account/myPage/{username}";
+    }
+
+
+
 }
