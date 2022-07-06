@@ -5,6 +5,8 @@ import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
+
 @Entity
 @Data
 @SequenceGenerator(name="Article_SEQ_GENERATOR", sequenceName="Board_SEQ", initialValue=1, allocationSize=1)
@@ -27,4 +29,7 @@ public class Board {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<Comments> comments;
 }

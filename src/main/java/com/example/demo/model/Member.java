@@ -46,6 +46,8 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> board;
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Comments> comments;
 
     @Transient
     private int age;

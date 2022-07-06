@@ -108,6 +108,7 @@
     <form
       action="/account/signUp"
       th:action="@{/account/signUp}"
+      th:object="${member}"
       style="border: 1px solid #ccc"
       method="post"
     >
@@ -115,23 +116,51 @@
         <h1>Sign Up</h1>
         <p>Please fill in this form to create an account.</p>
 
-        <label for="username"><b>Username</b></label>
-        <input type="text" placeholder="Enter name" name="username" required />
+        <div>
+          <label for="username"><b>Username</b></label>
+          <input
+            th:field="*{username}"
+            type="text"
+            placeholder="Enter name"
+            pattern=".{3,15}"
+            title="more than 3 words are acceptable"
+            required
+          />
+        </div>
+        <div
+          class="invalid-feedback"
+          th:if="${#fields.hasErrors('username')}"
+          th:errors="*{username}"
+        >
+          error
+        </div>
 
-        <!-- <label for="id"><b>Id</b></label>
-        <input type="text" placeholder="Enter Id" name="id" required /> -->
         <label for="password"><b>Password</b></label>
         <input
           type="password"
           placeholder="Enter Password"
-          name="password"
+          th:field="*{password}"
+          pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+          title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
           required
         />
+        <div
+          class="invalid-feedback"
+          th:if="${#fields.hasErrors('password')}"
+          th:errors="*{password}"
+        >
+          error
+        </div>
         <label for="email"><b>Email</b></label>
-        <input type="text" placeholder="Enter Email" name="email" />
+        <input
+          type="text"
+          placeholder="Enter Email"
+          th:field="*{email}"
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
+        />
 
         <label for="dob"><b>Date of Birth</b></label>
-        <div><input type="date" name="dob" /></div>
+        <div><input type="date" th:field="*{dob}" /></div>
         <br />
 
         <p>

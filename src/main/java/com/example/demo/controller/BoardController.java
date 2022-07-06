@@ -2,11 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.file.FileStore;
 import com.example.demo.model.Board;
+import com.example.demo.model.Comments;
 import com.example.demo.model.Member;
 import com.example.demo.repository.BoardRepository;
+import com.example.demo.repository.CommentsRepository;
 import com.example.demo.service.BoardService;
 import com.example.demo.service.MemberService;
 import com.example.demo.validator.BoardValidator;
+import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -33,6 +36,8 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 @Slf4j
@@ -43,12 +48,13 @@ public class BoardController {
 
 
     private final BoardRepository boardRepository;
+    private final CommentsRepository commentsRepository;
 
     private final BoardService boardService;
     private final BoardValidator boardValidator;
     private final FileStore fileStore;
     @GetMapping
-    public String form(Model model,@PageableDefault(size = 3, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
+    public String boardList(Model model,@PageableDefault(size = 3, sort="id", direction = Sort.Direction.DESC) Pageable pageable,
                        @RequestParam(required = false, defaultValue = "") String searchText){
 //        Page<Board> boards = boardRepository.findAll(pageable)
         Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(searchText, searchText, pageable);
@@ -117,20 +123,24 @@ public class BoardController {
     }
 
     @GetMapping("/article")
-    public String article(Model model, @RequestParam(required = false) Integer id){
-        if(id == null){
-            model.addAttribute("board",new Board());
-        }else{
+    public String article(@ModelAttribute("comments") Comments comments, Model model, @RequestParam(required = false) Integer id){
+
             Board board = boardService.findById(id);
             model.addAttribute("board",board);
-        }
+            if(!commentsRepository.findAllByBoard(boardRepository.getOne(id)).isEmpty()){
+                List<Comments> allById = commentsRepository.findAllByBoardOrderByIdDesc(boardRepository.getOne(id));
+                log.info("comments chk={}",allById.get(0).getContent());
+                model.addAttribute("comments2",allById);
+            }
+
         return "board/article";
     }
+
+
 
     @ResponseBody
     @GetMapping("/images/{fileName}")
     public Resource downloadImage(@PathVariable String fileName, HttpServletResponse response) throws MalformedURLException {
-
         return new UrlResource("file:"+fileStore.getFullPath(fileName));
     }
 
