@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import java.security.Principal;
@@ -41,12 +43,24 @@ public class CommentsController {
     }
 
     @GetMapping("/edit/{comment_id}")
-    public String edit(@PathVariable int comment_id,int board_id){
-
+    public String edit(@PathVariable int comment_id, Integer board_id, Model model, RedirectAttributes redirectAttributes){
+       // model.addAttribute("editCom",comment_id);
+        redirectAttributes.addFlashAttribute("editCom",comment_id);
         return "redirect:/board/article?id="+board_id;
     }
 
 
+    @PostMapping("/edit/{comment_id}")
+    public String update(@PathVariable Integer comment_id,String comment,String board_id){
+        log.info("param={}",comment);
+
+        Comments commentTobeupdated = commentsRepo.findById(comment_id).get();
+        commentTobeupdated.setContent(comment);
+        commentsRepo.save(commentTobeupdated);
+
+
+        return "redirect:/board/article?id="+board_id;
+    }
     @ResponseBody
     @DeleteMapping("/delete/{comment_id}")
     public void delete(@PathVariable int comment_id){

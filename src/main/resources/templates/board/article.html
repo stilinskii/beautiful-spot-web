@@ -41,6 +41,10 @@
         color: aliceblue;
       }
 
+      .hidden{
+        display: none;
+      }
+
       @media (min-width: 768px) {
         .bd-placeholder-img-lg {
           font-size: 3.5rem;
@@ -146,13 +150,26 @@
   </form>
   </div>
 <div th:each="comment:${comments2}" class="d-flex justify-content-around">
+  <th:block  th:unless="${editCom}==${comment.id}">
   <label for="comment" class="form-label"th:text="${comment.member.username}">jenn</label>
   <input type="text" class="form-control p-2 w-100 bd-highlight" id="comment" th:value="${comment.content}" disabled>
   <span th:text="${comment.written_date}">2022.7.6</span>
   <div th:if="${#authentication.name}==${comment.member.username}">
     <button type="button"class="btn btn-dark" th:onclick="|deleteComment(${comment.id},${board.id})|">delete</button>
-    <a href="#"  th:href="|/board/comment/edit/${comment.id}|" class="btn btn-dark">edit</a>
+    <a href="#" th:unless="${editCom}==${comment.id}" th:href="|/board/comments/edit/${comment.id}?board_id=${board.id}|" class="btn btn-dark">edit</a>
   </div>
+</th:block>
+<!-- edit form . 더 효율적인 방법이 있을 거 같지만 ... 지금으로선 최선이다. -->
+  <th:block th:if="${editCom}==${comment.id}">
+    <form action="" th:action="|/board/comments/edit/${comment.id}|" method="post">
+      <label for="comment" class="form-label"th:text="${comment.member.username}">jenn</label>
+      <input type="text" class="form-control p-2 w-100 bd-highlight edit" id="comment" name="comment" th:value="${comment.content}" >
+      <!-- id랑 name 둘 다 있어야 parameter로 인식 -->
+      <input type="hidden" name="board_id" id="board_id" th:value="${board.id}" >
+      <span th:text="${comment.written_date}">2022.7.6</span>
+      <button type="submit" class="btn btn-dark">edit</button>
+    </form>
+  </th:block>
 </div>
 
 </main>
@@ -183,6 +200,7 @@
           },
         });
       }
+
     </script>
   </body>
 </html>
